@@ -39,19 +39,19 @@ public class Assignee {
     
     //Set with all the ids of the to dos the assignee has to do
     @ManyToMany(targetEntity = de.unistuttgart.iste.ese.api.assignments.ToDo.class)
-    private Set<Long> toDoList;
+    private Set<ToDo> toDoList;
 
 
     // empty default constructor is necessary for JPA
     public Assignee() {
-        this.toDoList = new HashSet<Long>();
+        this.toDoList = new HashSet<ToDo>();
     }
 
     public Assignee(String prename, String name, String email) {
         this.name = name;
         this.prename = prename;
         this.email= email;
-        this.toDoList = new HashSet<Long>();
+        this.toDoList = new HashSet<ToDo>();
     }
 
     public long getId() {
@@ -86,28 +86,26 @@ public class Assignee {
         this.email = email;
     }
 
-    public Set<Long> getToDoList() {
+    public Set<ToDo> getToDoList() {
         return this.toDoList;
     }
 
     public boolean setToDo(ToDo toDo) {
-         for(Long old: this.toDoList){
-            if(old == toDo.getId()){
-                return false;
-            } 
+         if(this.getToDoList().contains(toDo)){
+            return false;
          }
-         this.toDoList.add(toDo.getId());
+         this.toDoList.add(toDo);
          return true;
     }
     public void deleteToDo(Long task) {
         if(task==null){
             throw new IllegalArgumentException("task not found");
         }
-        Set<Long> tasks = this.getToDoList();
+        Set<ToDo> tasks = this.getToDoList();
         tasks.remove(task);
         this.toDoList = tasks;
     }
-    public void setToDoList(Set<Long> toDoList) {
+    public void setToDoList(Set<ToDo> toDoList) {
         this.toDoList = toDoList;
     }
 }

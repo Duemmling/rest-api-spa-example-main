@@ -1,6 +1,5 @@
 package de.unistuttgart.iste.ese.api.assignments;
 
-import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 

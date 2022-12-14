@@ -1,12 +1,9 @@
 package de.unistuttgart.iste.ese.api.assignments;
 
-import java.lang.reflect.Array;
-import java.sql.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
+import java.util.List;
+
+import java.util.HashSet;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -96,7 +93,7 @@ public class AssignmentController {
     @PostMapping("/assignees")
     @ResponseStatus(HttpStatus.CREATED)
     public Assignee createAssignee(@Valid @RequestBody Assignee requestAssignee) {
-        Assignee request = new Assignee(requestAssignee.getName(), requestAssignee.getPrename(), requestAssignee.getEmail());
+        Assignee request = new Assignee(requestAssignee.getPrename(), requestAssignee.getName(), requestAssignee.getEmail());
         Assignee savedAssignee = AssigneeRepository.save(request);
         return savedAssignee;
     }
@@ -131,19 +128,22 @@ public class AssignmentController {
     @DeleteMapping("/assignees/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Assignee deleteAssignee(@PathVariable("id") long id) {
-        if(id<1||id>AssigneeRepository.count()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-            String.format("Assignee with ID %s not found!", id));
-        }
         Assignee assigneeToDelete = AssigneeRepository.findById(id);
+        if(assigneeToDelete!=null){
+            if(ToDoRepository.count()>0){
             for(ToDo tasks: ToDoRepository.findAll()){
                 if(tasks.getAssigneeList().contains(assigneeToDelete)){
                     tasks.deleteAssignee(assigneeToDelete);
                 }
-            }
+            }}
             AssigneeRepository.deleteById(id);
             return assigneeToDelete;
+       } 
+       else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            String.format("Task with ID %s not found!", id));
         }
+    }
         
 
     // delete a task
